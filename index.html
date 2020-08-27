@@ -23,9 +23,47 @@
         <!-- This Row container holds all the dynamic app content -->
         <div class="row">
 
-            <aside class='col-md-4' bg-gray>
+            <!-- this will contain the search bar and saved cities -->
+            <aside class='col-md-4 border'>
                 <h3>Search for a City:</h3>
-            </aside class>
+
+
+
+                <form class="form-inline">
+                    <div class="form-group mx-sm-3 mb-2">
+                        <label for="inputCity" class="sr-only">City</label>
+                        <input type="text" class="form-control" id="city-search-form" placeholder="E.g. Austin">
+                        <!-- Not sure but I hope this makes "Enter" activate the click event -->
+                        <input type="submit" class="btn btn-primary" value="Submit">
+                        <!-- How do I put the save icon ON the input button? Did I set this button up wrong? -->
+                        <!-- <i class='fa fa-search fa-lg'></i>>  -->
+
+
+                    </div>
+                    <!-- <button type="submit" class="btn btn-primary">
+                        </button> -->
+                </form>
+
+                <!-- previously searched cities will be populated to this list -->
+                <ul class="list-group saved-cities my-4" id="saved-cities">
+                    <!-- <li class="list-group-item">Cras justo odio</li> -->
+                </ul>
+
+            </aside>
+
+            <!-- This will contain the weather info for the selected city -->
+            <section class='col-md-8 border'>
+                <!-- This contains the top half of the selected city's data, the weather data -->
+                <div class="row weather-data border">
+
+                </div>
+
+                <!-- This contains the top half of the selected city's data, the weather data -->
+                <div class="row 5-day-forecast border">
+
+                </div>
+
+            </section>
         </div>
 
     </main>
@@ -34,6 +72,8 @@
 
     <!-- jQuery library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- My javscript File -->
+    <script src="./Assets/javascript.js"></script>
 
 </body>
 
