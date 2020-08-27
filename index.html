@@ -24,7 +24,7 @@
         <div class="row">
 
             <!-- this will contain the search bar and saved cities -->
-            <aside class='col-md-4 border'>
+            <aside class='bg-light full-height col-md-4 '>
                 <h3>Search for a City:</h3>
 
 
@@ -52,16 +52,19 @@
             </aside>
 
             <!-- This will contain the weather info for the selected city -->
-            <section class='col-md-8 border'>
+            <section class='col-md-8 ' id="weather-data">
                 <!-- This contains the top half of the selected city's data, the weather data -->
-                <div class="row weather-data border">
+                <!-- <div class="row  border" >
 
-                </div>
-
+                    <div class="row border h-100"></div>
+                    <div class="row border h-100"></div>
+                    <div class="row border h-100"></div>
+                </div> -->
                 <!-- This contains the top half of the selected city's data, the weather data -->
-                <div class="row 5-day-forecast border">
+                <!-- TODO: gonna render this dynamically -->
+                <!-- <div class="row 5-day-forecast border">
 
-                </div>
+                </div> -->
 
             </section>
         </div>
@@ -72,6 +75,8 @@
 
     <!-- jQuery library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <!-- Link to moment.JS library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
     <!-- My javscript File -->
     <script src="./Assets/javascript.js"></script>
 
