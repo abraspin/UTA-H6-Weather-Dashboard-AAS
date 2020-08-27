@@ -24,6 +24,7 @@
         <div class="row">
 
             <!-- this will contain the search bar and saved cities -->
+            <!-- TODO: how do I make this light background extend the height of the window? -->
             <aside class='bg-light full-height col-md-4 '>
                 <h3>Search for a City:</h3>
 
@@ -37,17 +38,30 @@
                         <input type="submit" class="btn btn-primary" value="Submit">
                         <!-- How do I put the save icon ON the input button? Did I set this button up wrong? -->
                         <!-- <i class='fa fa-search fa-lg'></i>>  -->
-
-
                     </div>
                     <!-- <button type="submit" class="btn btn-primary">
                         </button> -->
                 </form>
 
-                <!-- previously searched cities will be populated to this list -->
+                <!-- ATTEMPT - UL -->
+                <!-- previously searched cities will be populated to this list  -->
                 <ul class="list-group saved-cities my-4" id="saved-cities">
                     <!-- <li class="list-group-item">Cras justo odio</li> -->
                 </ul>
+
+                <!-- ATTEMPT - A ELEMENTS -->
+                <!-- <div class="list-group" id="saved-cities">
+                    <a href="#" class="list-group-item list-group-item-action">Dapibus ac facilisis in</a>
+                </div> -->
+
+                <!-- ATTEMPT - FRICKIN BUTTONS -->
+                <!-- <div class="id="saved-cities" btn-group btn-group-toggle" data-toggle="buttons">
+                    <label class="btn active">
+                        <input type="radio" name="options" id="option1" autocomplete="off" checked> Active
+                    </label>
+
+                </div> -->
+
 
             </aside>
 
