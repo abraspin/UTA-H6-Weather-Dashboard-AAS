@@ -206,9 +206,10 @@ $(document).ready(function () {
         console.log(i);
 
         var forecastCard = $(
-          `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  mx-2'></div>;`
+          `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  m-2'></div>;`
         );
-        forecastCard.append($(`<h5 class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
+        //TODO: these card respond positionally, but they are taking up the whole element when they go to the next row.
+        forecastCard.append($(`<h5 'class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
         // forecastCard.append($(`<h5>${responseArrayEl.weather}</h5>`));
 
         console.log(responseArrayEl.weather);
