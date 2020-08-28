@@ -1,19 +1,19 @@
 // Declaring static variables
 var apiKey = "776c0666fbe2923375cece8f53ee0a8c";
 var savedCitiesEl = $("#saved-cities");
-
 var weatherDataEl = $("#weather-data");
 var forecastEl = $("#forecast-data");
 
-var localStoredCitiesArray;
+var localStoredCitiesArray = JSON.parse(localStorage.getItem("localStoredCitiesArray")) || [];
+console.log("localStoredCitiesArray", localStoredCitiesArray);
 
 //this is so weird...
-if (!localStorage.getItem("localStoredCitiesArray")) {
-  //this is actually necessary
-  console.log("I think local storage is null");
-  localStorage.setItem("localStoredCitiesArray", "");
-  //   localStoredCitiesArray = JSON.stringify("");
-}
+// if (!localStorage.getItem("localStoredCitiesArray")) {
+//   //this is actually necessary
+//   console.log("I think local storage is null");
+//   localStorage.setItem("localStoredCitiesArray", "");
+//   //   localStoredCitiesArray = JSON.stringify("");
+// }
 
 // Main executing script
 $(document).ready(function () {
@@ -43,16 +43,15 @@ $(document).ready(function () {
     //   searchedCity = "Austin";
     ///////////////dummy value//////////////////////
     if (searchedCity) {
-      console.log("searchedCity", searchedCity);
-      if (!localStoredCitiesArray) {
-        localStoredCitiesArray = [];
-      }
-      console.log("localStoredCitiesArray", localStoredCitiesArray);
+      // if (!localStoredCitiesArray) {
+      //   localStoredCitiesArray = [];
+      // }
 
+      // add the new city to the local "list of cities" variable
       localStoredCitiesArray.push(searchedCity);
-      console.log("localStoredCitiesArray", localStoredCitiesArray);
+
+      //push the new array with new city on top to local storage
       localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
-      console.log("JSON.stringify(localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
 
       //"build" the buttons
       var newCityButton = $(`<li class="list-group-item city-button my-1">${searchedCity}</li>`);
@@ -80,22 +79,19 @@ $(document).ready(function () {
 
   ///////////////////////////event listener for clicking on a city button////////////////////////////////
 
-  //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
   $("aside").on("click", "li", function (event) {
+    //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
+
     //   First we clear out any old weather info that might be in the right side
     $("#weather-data").empty();
     $("#forecast-data").empty();
-    // $("#forecast-data").innerHTML = `<div id="forecast-header-element"  </div>;`;
 
     // display the loading spinner, it will be cleared when the ajax call goes through
     displayLoadingSpinner();
+
     //ajax call search term is the name of the city this "button" represents
-    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
     searchTerm = event.currentTarget.innerHTML;
-    ////////////////dummy variable/////////////////////
-    //   searchTerm = "Austin";
-    ////////////////dummy variable/////////////////////
+
     // // Constructing a URL to search openWeatherAPI for the city entered by the user
     var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
 
@@ -103,15 +99,10 @@ $(document).ready(function () {
     callAPIAndRender(queryURL);
     // render the 5 day forecast
     renderFiveDayForecast(searchTerm);
-    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
   });
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL) {
     //
-
-    //add our nice border, it was hidden prior to pulling a city.
-    // $("#weather-data").addClass("border");
-
     // // Performing our AJAX GET request
     $.ajax({
       url: queryURL,
@@ -129,7 +120,7 @@ $(document).ready(function () {
 
         // temp is in Kelvin at this point
         var currentTemp = parseInt(tempResults.temp);
-        //TODO:
+
         // convert currentTemp from kelvin to farenheit
         currentTemp = (((currentTemp - 273.15) * 9) / 5 + 32).toFixed(2);
         var currentHumidity = tempResults.humidity;
@@ -139,18 +130,22 @@ $(document).ready(function () {
         var currentLon = response.coord.lon;
         var currentClouds = response.clouds.all;
 
-        //declaring currentUVIndex here so it can be set out of the below call's scope
-
+        //Now we do the ajax call to get UV information for this location
         var UVQueryURL = `https://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${currentLat}&lon=${currentLon}`;
 
         var currentDate = moment().format("l");
 
+        //grab the icon link for weather visualization
         var currentWeatherIconLink = `http://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
         var weatherIconEl = $(`<img src='${currentWeatherIconLink}'></img>`);
-        //FIXME: I can't get the dang weather icon to go inline!
+
+        //append the current weather card header
         weatherDataEl.append($(`<h2 style='font-weight: bold'>${searchTerm} (${currentDate}) </h2>`));
+
+        //FIXME: I can't get the dang weather icon to go inline!
         weatherDataEl.append(weatherIconEl);
 
+        //render the rest of the current weather card
         weatherDataEl.append($(`<h5 class='my-4' >Temperature: ${currentTemp} <sup>o</sup>F</h5>`));
         weatherDataEl.append($(`<h5 class='my-4'>Humidity: ${currentHumidity}%</h5>`));
         weatherDataEl.append($(`<h5 class='my-4'>Wind Speed: ${currentWindSpeed} MPH</h5>`));
@@ -158,10 +153,11 @@ $(document).ready(function () {
         // is it ridiculous to have a ajax within an ajax?
         $.ajax({ url: UVQueryURL, method: "GET" }).then(function (response) {
           var currentUVIndex = response.value;
-          // TODO: convert UV index into a dynamically styled badge thingy
           var UVIndexColor;
+
+          //set color for severity of UV index
           if (currentUVIndex < 0) {
-            //no styling, something is wrong.
+            //no styling, bc something is wrong if you're here.
           } else if (currentUVIndex < 2) {
             UVIndexColor = "green";
           } else if (currentUVIndex < 5) {
@@ -173,21 +169,20 @@ $(document).ready(function () {
           } else {
             UVIndexColor = "#993299";
           }
-          console.log("callAPIAndRender -> UVIndexColor", UVIndexColor);
+          // add the UV index line to the current weather card
           weatherDataEl.append(
             $(`<h5>UV Index: <span class='rounded py-1 px-2' id='UVColor'>${currentUVIndex.toFixed(2)}</span></h5>`)
           );
+
+          //set the fancy color background of our UV index
           var UVColorSpan = $("#UVColor");
-          UVColorSpan.css("background-color", UVIndexColor);
           UVColorSpan.css("background-color", UVIndexColor);
         });
       });
   }
 
   function renderFiveDayForecast(city) {
-    //   moved this into the HTML
-    // $("#forecast-header-element").append($("<h2>y For5-Daecast:</h2>"));
-
+    // get ready for API query for forecast
     forecastQueryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
     console.log(forecastQueryURL);
 
@@ -198,31 +193,36 @@ $(document).ready(function () {
       //first show the header element, we hid it prior to rendering this info
       $("#forecast-header").show();
 
+      // then render each of the 5 day forecast cards
+      // add 8 each time so we get the same time each day, each subsequent array el is 3 hours later
       for (var i = 0; i < response.list.length; i += 8) {
         // counter used to render next 5 calendar dates
         var dayCounter = 0;
-        var responseArrayEl = response.list[i];
-        console.log("renderFiveDayForecast -> responseArrayEl", responseArrayEl);
-        console.log(i);
 
+        // we just want one data point per day
+        var responseArrayEl = response.list[i];
+
+        //build the card body
         var forecastCard = $(
           `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  m-2'></div>;`
         );
         //TODO: these card respond positionally, but they are taking up the whole element when they go to the next row.
         forecastCard.append($(`<h5 'class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
-        // forecastCard.append($(`<h5>${responseArrayEl.weather}</h5>`));
 
-        console.log(responseArrayEl.weather);
-        console.log(responseArrayEl.weather[0].icon + ".png");
+        //increment counter used to render next 5 calendar dates
+        dayCounter += 1;
+        console.log(dayCounter);
+
+        //grab our nice weather icon
         forecastCard.append($(`<img src="http://openweathermap.org/img/wn/${responseArrayEl.weather[0].icon}@2x.png">;`));
+
+        //put the temp and humidity on
         var temp = (((responseArrayEl.main.temp - 273.15) * 9) / 5 + 32).toFixed(2);
         forecastCard.append($(`<h5>Temp: ${temp}</h5>`));
         forecastCard.append($(`<h5>Humidity: ${responseArrayEl.main.humidity}%</h5>`));
-        forecastEl.append(forecastCard);
 
-        //increment counter used to render next 5 calendar dates
-        dayCounter++;
-        console.log("renderFiveDayForecast -> dayCounter", dayCounter);
+        // put the card in the row element
+        forecastEl.append(forecastCard);
       }
     });
   }
@@ -233,6 +233,7 @@ $(document).ready(function () {
     $("#weather-data").append(spinnerEl);
   }
 
+  ////////////////FUNCTION TO PREFILL THE SAVED CITIES UL///////////////////
   function preFillCities() {
     //FIXME: THIS CRASHES WHEN LOCAL STORAGE IS EMPTY.
     var citiesArray = localStorage.getItem("localStoredCitiesArray") || [];
