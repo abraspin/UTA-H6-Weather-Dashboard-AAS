@@ -5,65 +5,73 @@ var savedCitiesEl = $("#saved-cities");
 var weatherDataEl = $("#weather-data");
 var forecastEl = $("#forecast-data");
 
+var localStoredCitiesArray = [];
 // Main executing script
 $(document).ready(function () {
   //
   //
-  //   ///FIXME: just running the damn things
-  //   callAPIAndRender(austin);
-  //   // render the 5 day forecast
-  //   renderFiveDayForecast(austin);
-  //   //FIXME: ///////////////////
 
-  // Event listener for adding new cities
+  //Fill the list right away with any previously saved cities
+  preFillCities();
 
   //TODO: set the selected city with the "active" class in the UL
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME   $(".form-inline").on("submit", function (event) {
-  // UNCOMMENT ME TOO TODO: event.preventDefault();
+  // Event listener for adding new cities
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+  $(".form-inline").on("submit", function (event) {
+    // UNCOMMENT ME TOO TODO:
+    event.preventDefault();
 
-  //TODO: need error checking to make sure the api gets the right format search term
-  //TODO: add error checking for the user entering a city they already added
-  //TODO: reach goal: return an error message on API 404 return
+    //TODO: need error checking to make sure the api gets the right format search term
+    //TODO: add error checking for the user entering a city they already added
+    //TODO: reach goal: return an error message on API 404 return
 
-  //check for empty string
+    //check for empty string
 
-  //set searched city to the form value
-  var searchedCity = $(`#city-search-form`).val();
-  ///////////////dummy value//////////////////////
-  searchedCity = "Austin";
-  ///////////////dummy value//////////////////////
-  if (searchedCity) {
-    console.log("searchedCity", searchedCity);
+    //set searched city to the form value
+    var searchedCity = $(`#city-search-form`).val();
+    ///////////////dummy value//////////////////////
+    //   searchedCity = "Austin";
+    ///////////////dummy value//////////////////////
+    if (searchedCity) {
+      console.log("searchedCity", searchedCity);
 
-    // generate each user inputted city as a "button" line item
-    savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${searchedCity}</li>`));
-  }
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME});
+      localStoredCitiesArray.push(searchedCity);
+      console.log("localStoredCitiesArray", localStoredCitiesArray);
+      localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
+
+      // generate each user inputted city as a "button" line item
+      savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${searchedCity}</li>`));
+    }
+    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+  });
 
   /////////////event listener for clicking on a city button////////////////////////
 
   //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME$("aside").on("click", "li", function (event) {
-  //   First we clear out any old weather info that might be in the right side
-  $("#weather-data").empty();
-  //this is dumb
-  $("#forecast-data").innerHTML = `<div id="forecast-header-element"  </div>;`;
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+  $("aside").on("click", "li", function (event) {
+    //   First we clear out any old weather info that might be in the right side
+    $("#weather-data").empty();
+    $("#forecast-data").empty();
+    // $("#forecast-data").innerHTML = `<div id="forecast-header-element"  </div>;`;
 
-  // display the loading spinner, it will be cleared when the ajax call goes through
-  displayLoadingSpinner();
-  //ajax call search term is the name of the city this "button" represents
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME searchTerm = event.currentTarget.innerHTML;
-  ////////////////dummy variable/////////////////////
-  searchTerm = "Austin";
-  ////////////////dummy variable/////////////////////
-  // // Constructing a URL to search openWeatherAPI for the city entered by the user
-  var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
+    // display the loading spinner, it will be cleared when the ajax call goes through
+    displayLoadingSpinner();
+    //ajax call search term is the name of the city this "button" represents
+    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+    searchTerm = event.currentTarget.innerHTML;
+    ////////////////dummy variable/////////////////////
+    //   searchTerm = "Austin";
+    ////////////////dummy variable/////////////////////
+    // // Constructing a URL to search openWeatherAPI for the city entered by the user
+    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
 
-  // // Performing our AJAX GET request
-  callAPIAndRender(queryURL);
-  // render the 5 day forecast
-  renderFiveDayForecast(searchTerm);
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME });
+    // // Performing our AJAX GET request
+    callAPIAndRender(queryURL);
+    // render the 5 day forecast
+    renderFiveDayForecast(searchTerm);
+    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+  });
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL) {
     //
@@ -103,7 +111,7 @@ $(document).ready(function () {
         var currentWeatherIconLink = `http://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
         var weatherIconEl = $(`<img src='${currentWeatherIconLink}'></img>`);
         //FIXME: I can't get the dang weather icon to go inline!
-        weatherDataEl.append($(`<h2>${searchTerm} (${currentDate}) </h2>`));
+        weatherDataEl.append($(`<h2 style='font-weight: bold'>${searchTerm} (${currentDate}) </h2>`));
         weatherDataEl.append(weatherIconEl);
 
         weatherDataEl.append($(`<h5 class='my-4' >Temperature: ${currentTemp} <sup>o</sup>F</h5>`));
@@ -140,6 +148,10 @@ $(document).ready(function () {
   function renderFiveDayForecast(city) {
     //   moved this into the HTML
     // $("#forecast-header-element").append($("<h2>y For5-Daecast:</h2>"));
+
+    //first show the header element, we hid it prior to rendering this info
+    $("#forecast-header").show();
+
     forecastQueryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
     console.log(forecastQueryURL);
 
@@ -170,9 +182,14 @@ $(document).ready(function () {
   ////////////FUNCTION TO DISPLAY SPINNER WHILE LOADING
   function displayLoadingSpinner() {
     var spinnerEl = $("<div class='text-center mt-5'><i class='fa fa-spinner fa-spin ' style='size:36px'></i> </div>");
-
     $("#weather-data").append(spinnerEl);
   }
 
+  function preFillCities() {
+    var citiesArray = JSON.parse(localStorage.getItem("localStoredCitiesArray"));
+    for (var i = 0; i < citiesArray.length; i++) {
+      savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${citiesArray[i]}</li>`));
+    }
+  }
   //TODO: https://getbootstrap.com/docs/4.1/components/list-group/ FOR ACTIVE SELECTION STYLING
 });
