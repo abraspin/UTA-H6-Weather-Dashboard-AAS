@@ -7,40 +7,63 @@ var forecastEl = $("#forecast-data");
 
 // Main executing script
 $(document).ready(function () {
+  //
+  //
+  //   ///FIXME: just running the damn things
+  //   callAPIAndRender(austin);
+  //   // render the 5 day forecast
+  //   renderFiveDayForecast(austin);
+  //   //FIXME: ///////////////////
+
   // Event listener for adding new cities
-  $(".form-inline").on("submit", function (event) {
-    event.preventDefault();
-    //FIXME: Get the city name from the user's form input
-    var searchedCity = $(this).val();
 
-    /////////dummy variable/////////////
-    searchedCity = "Austin";
-    /////////dummy variable/////////////
+  //TODO: set the selected city with the "active" class in the UL
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME   $(".form-inline").on("submit", function (event) {
+  // UNCOMMENT ME TOO TODO: event.preventDefault();
 
-    // generate each user inputted city
+  //TODO: need error checking to make sure the api gets the right format search term
+  //TODO: add error checking for the user entering a city they already added
+  //TODO: reach goal: return an error message on API 404 return
+
+  //check for empty string
+
+  //set searched city to the form value
+  var searchedCity = $(`#city-search-form`).val();
+  ///////////////dummy value//////////////////////
+  searchedCity = "Austin";
+  ///////////////dummy value//////////////////////
+  if (searchedCity) {
+    console.log("searchedCity", searchedCity);
+
+    // generate each user inputted city as a "button" line item
     savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${searchedCity}</li>`));
-  });
+  }
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME});
 
   /////////////event listener for clicking on a city button////////////////////////
 
   //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
-  $("aside").on("click", "li", function (event) {
-    //TODO: add error checking for the user entering a city they already added
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME$("aside").on("click", "li", function (event) {
+  //   First we clear out any old weather info that might be in the right side
+  $("#weather-data").empty();
+  //this is dumb
+  $("#forecast-data").innerHTML = `<div id="forecast-header-element"  </div>;`;
 
-    //TODO: make the rendering into a function bc you also need code to highlight the active button
-    //TODO: add a spinner while the API call waits
+  // display the loading spinner, it will be cleared when the ajax call goes through
+  displayLoadingSpinner();
+  //ajax call search term is the name of the city this "button" represents
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME searchTerm = event.currentTarget.innerHTML;
+  ////////////////dummy variable/////////////////////
+  searchTerm = "Austin";
+  ////////////////dummy variable/////////////////////
+  // // Constructing a URL to search openWeatherAPI for the city entered by the user
+  var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
 
-    //ajax call search term is the name of the city this "button" represents
-    searchTerm = event.currentTarget.innerHTML;
-
-    // // Constructing a URL to search openWeatherAPI for the city entered by the user
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
-
-    // // Performing our AJAX GET request
-    callAPIAndRender(queryURL);
-    // render the 5 day forecast
-    renderFiveDayForecast(searchTerm);
-  });
+  // // Performing our AJAX GET request
+  callAPIAndRender(queryURL);
+  // render the 5 day forecast
+  renderFiveDayForecast(searchTerm);
+  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME });
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL) {
     //
@@ -51,6 +74,9 @@ $(document).ready(function () {
     })
       // After the data comes back from the API
       .then(function (response) {
+        //clear spinner outta there
+        $("#weather-data").empty();
+
         // Storing searched city's weather and temperature objects
         var weatherResults = response.weather;
         var tempResults = response.main;
@@ -80,21 +106,40 @@ $(document).ready(function () {
         weatherDataEl.append($(`<h2>${searchTerm} (${currentDate}) </h2>`));
         weatherDataEl.append(weatherIconEl);
 
-        weatherDataEl.append($(`<h5>Temperature: ${currentTemp} <sup>o</sup>F</h5>`));
-        weatherDataEl.append($(`<h5>Humidity: ${currentHumidity}%</h5>`));
-        weatherDataEl.append($(`<h5>Wind Speed: ${currentWindSpeed} MPH</h5>`));
+        weatherDataEl.append($(`<h5 class='my-4' >Temperature: ${currentTemp} <sup>o</sup>F</h5>`));
+        weatherDataEl.append($(`<h5 class='my-4'>Humidity: ${currentHumidity}%</h5>`));
+        weatherDataEl.append($(`<h5 class='my-4'>Wind Speed: ${currentWindSpeed} MPH</h5>`));
 
         // is it ridiculous to have a ajax within an ajax?
         $.ajax({ url: UVQueryURL, method: "GET" }).then(function (response) {
           var currentUVIndex = response.value;
           // TODO: convert UV index into a dynamically styled badge thingy
-          weatherDataEl.append($(`<h5>UV Index: ${currentUVIndex}</h5>`));
+          var UVIndexColor;
+          if (currentUVIndex < 0) {
+            //no styling, something is wrong.
+          } else if (currentUVIndex < 2) {
+            UVIndexColor = "green";
+          } else if (currentUVIndex < 5) {
+            UVIndexColor = "yellow";
+          } else if (currentUVIndex < 7) {
+            UVIndexColor = "orange";
+          } else if (currentUVIndex < 10) {
+            UVIndexColor = "red";
+          } else {
+            UVIndexColor = "#993299";
+          }
+          console.log("callAPIAndRender -> UVIndexColor", UVIndexColor);
+          weatherDataEl.append($(`<h5>UV Index: <span class='rounded p-1' id='UVColor'>${currentUVIndex}</span></h5>`));
+          var UVColorSpan = $("#UVColor");
+          UVColorSpan.css("background-color", UVIndexColor);
+          UVColorSpan.css("background-color", UVIndexColor);
         });
       });
   }
 
   function renderFiveDayForecast(city) {
-    $("#forecast-header-element").append($("<h2>5-Day Forecast:</h2>"));
+    //   moved this into the HTML
+    // $("#forecast-header-element").append($("<h2>y For5-Daecast:</h2>"));
     forecastQueryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
     console.log(forecastQueryURL);
 
@@ -104,16 +149,11 @@ $(document).ready(function () {
 
       for (var i = 0; i < 5; i++) {
         var responseArrayEl = response.list[i];
-        //     var forecastCard = $(`
-        //   <div class="card col-md-2" style="width: 18rem;">
-        //   <div class="card-body">
-        //     <h5 class="card-title">Card title</h5>
-        //     <p class="card-text"></p>
-        //   </div>
-        // </div>;
-        //   `);
-        var forecastCard = $(`<div class='day${i} container w-25 border mx-2'></div>;`);
-        forecastCard.append($(`<h5>${moment().add(i, "days").format("l")}</h5>`));
+
+        var forecastCard = $(
+          `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold border mx-2'></div>;`
+        );
+        forecastCard.append($(`<h5 class='font-weight-bold'>${moment().add(i, "days").format("l")}</h5>`));
         // forecastCard.append($(`<h5>${responseArrayEl.weather}</h5>`));
 
         console.log(responseArrayEl.weather);
@@ -125,6 +165,13 @@ $(document).ready(function () {
         forecastEl.append(forecastCard);
       }
     });
+  }
+
+  ////////////FUNCTION TO DISPLAY SPINNER WHILE LOADING
+  function displayLoadingSpinner() {
+    var spinnerEl = $("<div class='text-center mt-5'><i class='fa fa-spinner fa-spin ' style='size:36px'></i> </div>");
+
+    $("#weather-data").append(spinnerEl);
   }
 
   //TODO: https://getbootstrap.com/docs/4.1/components/list-group/ FOR ACTIVE SELECTION STYLING

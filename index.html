@@ -19,14 +19,14 @@
     </header>
 
 
-    <main class="container">
+    <main class="container m-0">
         <!-- This Row container holds all the dynamic app content -->
         <div class="row">
 
             <!-- this will contain the search bar and saved cities -->
             <!-- TODO: how do I make this light background extend the height of the window? -->
             <aside class='bg-light full-height col-md-4 '>
-                <h3>Search for a City:</h3>
+                <h3 class='my-2'>Search for a City:</h3>
 
 
 
@@ -67,15 +67,16 @@
 
             <!-- This will contain the weather info for the selected city -->
             <section class='col-md-8 '>
-                <div id="weather-data">
+                <div id="weather-data" class='border rounded p-4'>
 
                 </div>
 
                 <!-- this div holds the forecast data -->
-                <div id="forecast-data">
-                    <div id="forecast-header-element">
+                <h2>5-Day Forecast:</h2>
+                <div id="forecast-data" class='border radius row'>
+                    <!-- <div id="forecast-header-element">
 
-                    </div>
+                    </div> -->
                 </div>
                 <!-- This contains the top half of the selected city's data, the weather data -->
                 <!-- <div class="row  border" >
