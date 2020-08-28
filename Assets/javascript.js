@@ -1,30 +1,40 @@
-// Declaring statis variables
+// Declaring static variables
 var apiKey = "776c0666fbe2923375cece8f53ee0a8c";
 var savedCitiesEl = $("#saved-cities");
 
 var weatherDataEl = $("#weather-data");
 var forecastEl = $("#forecast-data");
 
-var localStoredCitiesArray = [];
+var localStoredCitiesArray;
+
+//this is so weird...
+if (!localStorage.getItem("localStoredCitiesArray")) {
+  //this is actually necessary
+  console.log("I think local storage is null");
+  localStorage.setItem("localStoredCitiesArray", "");
+  //   localStoredCitiesArray = JSON.stringify("");
+}
+
 // Main executing script
 $(document).ready(function () {
   //
   //
-
   //Fill the list right away with any previously saved cities
   preFillCities();
 
+  //
+  //
+  //
   //TODO: set the selected city with the "active" class in the UL
-  // Event listener for adding new cities
-  //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+  ///////////////////////////// Event listener for adding new cities/////////////////////////////
+
   $(".form-inline").on("submit", function (event) {
-    // UNCOMMENT ME TOO TODO:
     event.preventDefault();
 
     //TODO: need error checking to make sure the api gets the right format search term
     //TODO: add error checking for the user entering a city they already added
     //TODO: reach goal: return an error message on API 404 return
-
+    //TODO: what does it mean when my url has a "?" at the end of it? It...breaks some stuff, with the search?
     //check for empty string
 
     //set searched city to the form value
@@ -34,18 +44,41 @@ $(document).ready(function () {
     ///////////////dummy value//////////////////////
     if (searchedCity) {
       console.log("searchedCity", searchedCity);
+      if (!localStoredCitiesArray) {
+        localStoredCitiesArray = [];
+      }
+      console.log("localStoredCitiesArray", localStoredCitiesArray);
 
       localStoredCitiesArray.push(searchedCity);
       console.log("localStoredCitiesArray", localStoredCitiesArray);
       localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
+      console.log("JSON.stringify(localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
+
+      //"build" the buttons
+      var newCityButton = $(`<li class="list-group-item city-button my-1">${searchedCity}</li>`);
+
+      //TODO: optional: add x out icon
+      //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
       // generate each user inputted city as a "button" line item
-      savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${searchedCity}</li>`));
+      savedCitiesEl.append(newCityButton);
     }
-    //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
+
+    //reset search field to blank after submitting a city
+    $(`#city-search-form`).val("");
+  });
+  //FIXME: OPTIONAL  ////////////////////event listener for "exing out" of an existing city LI////////////////////////
+  //   $(".close-btn").on("click", function (event) {
+  //     console.log(event.currentTarget);
+  //   });
+
+  //////////event LISTENER FOR CLEAR ALL CITIES BUTTON/////////////////////////
+  $("#clear-cities-btn").on("click", function (event) {
+    $("#saved-cities").empty();
+    localStorage.setItem("localStoredCitiesArray", "[]");
   });
 
-  /////////////event listener for clicking on a city button////////////////////////
+  ///////////////////////////event listener for clicking on a city button////////////////////////////////
 
   //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
   //TODO:TODO:TODO:TODO:TODO:TODO: UNCOMMENT ME
@@ -75,6 +108,10 @@ $(document).ready(function () {
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL) {
     //
+
+    //add our nice border, it was hidden prior to pulling a city.
+    // $("#weather-data").addClass("border");
+
     // // Performing our AJAX GET request
     $.ajax({
       url: queryURL,
@@ -137,7 +174,9 @@ $(document).ready(function () {
             UVIndexColor = "#993299";
           }
           console.log("callAPIAndRender -> UVIndexColor", UVIndexColor);
-          weatherDataEl.append($(`<h5>UV Index: <span class='rounded p-1' id='UVColor'>${currentUVIndex}</span></h5>`));
+          weatherDataEl.append(
+            $(`<h5>UV Index: <span class='rounded py-1 px-2' id='UVColor'>${currentUVIndex.toFixed(2)}</span></h5>`)
+          );
           var UVColorSpan = $("#UVColor");
           UVColorSpan.css("background-color", UVIndexColor);
           UVColorSpan.css("background-color", UVIndexColor);
@@ -149,23 +188,27 @@ $(document).ready(function () {
     //   moved this into the HTML
     // $("#forecast-header-element").append($("<h2>y For5-Daecast:</h2>"));
 
-    //first show the header element, we hid it prior to rendering this info
-    $("#forecast-header").show();
-
     forecastQueryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
     console.log(forecastQueryURL);
 
     $.ajax({ url: forecastQueryURL, method: "GET" }).then(function (response) {
       console.log(response);
-      console.log(response.list[0]);
 
-      for (var i = 0; i < 5; i++) {
+      //Now that we know the http request has been responded to,
+      //first show the header element, we hid it prior to rendering this info
+      $("#forecast-header").show();
+
+      for (var i = 0; i < response.list.length; i += 8) {
+        // counter used to render next 5 calendar dates
+        var dayCounter = 0;
         var responseArrayEl = response.list[i];
+        console.log("renderFiveDayForecast -> responseArrayEl", responseArrayEl);
+        console.log(i);
 
         var forecastCard = $(
-          `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold border mx-2'></div>;`
+          `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  mx-2'></div>;`
         );
-        forecastCard.append($(`<h5 class='font-weight-bold'>${moment().add(i, "days").format("l")}</h5>`));
+        forecastCard.append($(`<h5 class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
         // forecastCard.append($(`<h5>${responseArrayEl.weather}</h5>`));
 
         console.log(responseArrayEl.weather);
@@ -175,20 +218,34 @@ $(document).ready(function () {
         forecastCard.append($(`<h5>Temp: ${temp}</h5>`));
         forecastCard.append($(`<h5>Humidity: ${responseArrayEl.main.humidity}%</h5>`));
         forecastEl.append(forecastCard);
+
+        //increment counter used to render next 5 calendar dates
+        dayCounter++;
+        console.log("renderFiveDayForecast -> dayCounter", dayCounter);
       }
     });
   }
 
   ////////////FUNCTION TO DISPLAY SPINNER WHILE LOADING
   function displayLoadingSpinner() {
-    var spinnerEl = $("<div class='text-center mt-5'><i class='fa fa-spinner fa-spin ' style='size:36px'></i> </div>");
+    var spinnerEl = $("<div class='text-center mt-5'><i class='fa fa-spinner mb-5 fa-spin fa-4x' ></i> </div>");
     $("#weather-data").append(spinnerEl);
   }
 
   function preFillCities() {
-    var citiesArray = JSON.parse(localStorage.getItem("localStoredCitiesArray"));
-    for (var i = 0; i < citiesArray.length; i++) {
-      savedCitiesEl.append($(`<li class="list-group-item city-button my-1">${citiesArray[i]}</li>`));
+    //FIXME: THIS CRASHES WHEN LOCAL STORAGE IS EMPTY.
+    var citiesArray = localStorage.getItem("localStoredCitiesArray") || [];
+    console.log("preFillCities -> citiesArray", citiesArray);
+    if (citiesArray.length > 0) {
+      var citiesArray = JSON.parse(citiesArray) || [];
+
+      for (var i = 0; i < citiesArray.length; i++) {
+        newButton = $(`<li class="list-group-item city-button my-1">${citiesArray[i]}</li>`);
+        //optional TODO: to add an x button.
+        //   newButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
+
+        savedCitiesEl.append(newButton);
+      }
     }
   }
   //TODO: https://getbootstrap.com/docs/4.1/components/list-group/ FOR ACTIVE SELECTION STYLING
