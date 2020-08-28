@@ -2,6 +2,9 @@
 var apiKey = "776c0666fbe2923375cece8f53ee0a8c";
 var savedCitiesEl = $("#saved-cities");
 
+var weatherDataEl = $("#weather-data");
+var forecastEl = $("#forecast-data");
+
 // Main executing script
 $(document).ready(function () {
   // Event listener for adding new cities
@@ -36,6 +39,8 @@ $(document).ready(function () {
 
     // // Performing our AJAX GET request
     callAPIAndRender(queryURL);
+    // render the 5 day forecast
+    renderFiveDayForecast(searchTerm);
   });
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL) {
@@ -72,7 +77,6 @@ $(document).ready(function () {
 
         var UVQueryURL = `http://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${currentLat}&lon=${currentLon}`;
 
-        var weatherDataEl = $("#weather-data");
         var currentDate = moment().format("l");
 
         // TODO: add a conditional looking at cloud coverage and adding an icon
@@ -93,6 +97,31 @@ $(document).ready(function () {
 
         console.log("callAPIAndRender -> currentWindSpeed", currentWindSpeed);
       });
+  }
+
+  //FIXME: this is returning a CORS error, probably too many API calls?
+  function renderFiveDayForecast(city) {
+    $("#forecast-header-element").append($("<h2>5-Day Forecast:</h2>"));
+    forecastQueryURL = `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${apiKey}`;
+    console.log(forecastQueryURL);
+
+    $.ajax({ url: forecastQueryURL, method: "GET" }).then(function (response) {
+      console.log(response);
+
+      for (var i = 0; i < 5; i++) {
+        //     var forecastCard = $(`
+        //   <div class="card col-md-2" style="width: 18rem;">
+        //   <div class="card-body">
+        //     <h5 class="card-title">Card title</h5>
+        //     <p class="card-text"></p>
+        //   </div>
+        // </div>;
+        //   `);
+        var forecastCard = $(`<span class='border mx-2'> day ${i + 1} </span>;`);
+
+        forecastEl.append(forecastCard);
+      }
+    });
   }
 
   //TODO: https://getbootstrap.com/docs/4.1/components/list-group/ FOR ACTIVE SELECTION STYLING
