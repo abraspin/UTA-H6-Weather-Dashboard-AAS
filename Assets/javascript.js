@@ -59,6 +59,7 @@ $(document).ready(function () {
 
   /////////////////////////////EVENT LISTENER FOR CLEAR ALL CITIES BUTTON/////////////////////////
   $("#clear-cities-btn").on("click", function (event) {
+    event.preventDefault;
     $("#saved-cities").empty();
     localStorage.setItem("localStoredCitiesArray", "[]");
   });
@@ -91,7 +92,7 @@ $(document).ready(function () {
     // render the 5 day forecast
     renderFiveDayForecast(searchTerm);
   });
-  //TODO: maybe dont need queiryu uirl arg,. jkust make it inside functiuon
+  //TODO: maybe don't need queryurl arg, just make it inside the function
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL, searchTerm) {
     //
