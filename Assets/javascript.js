@@ -14,7 +14,7 @@ $(document).ready(function () {
   //Fill the list right away with any previously saved cities
   preFillCities();
 
-  //TODO: put this inside of the prefillcities function?
+  //TODO: put this inside of the prefill cities function?
   //Prefill forecast data with most recently searched city, if there was one
   if (localStoredCitiesArray.length > 0) {
     var latestSearchedCity = localStoredCitiesArray[0];
@@ -30,6 +30,7 @@ $(document).ready(function () {
   }
 
   ///////////////////////////// EVENT LISTENER FOR ADDING NEW CITIES/////////////////////////////
+  // adding a new city will also immediately run the ajax call for the inputted city
   $(".form-inline").on("submit", function (event) {
     event.preventDefault();
 
@@ -256,22 +257,23 @@ $(document).ready(function () {
   ////////////////FUNCTION TO PREFILL THE SAVED CITIES UL///////////////////
   function preFillCities() {
     var citiesArray = localStorage.getItem("localStoredCitiesArray") || [];
-    console.log("preFillCities -> citiesArray", citiesArray);
     if (citiesArray.length > 0) {
       var citiesArray = JSON.parse(citiesArray) || [];
 
       savedCitiesEl.empty();
       for (var i = 0; i < citiesArray.length; i++) {
-        // newButton = $(`<li class="list-group-item city-button ">${citiesArray[i]}</li>`);
-        // newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${citiesArray[i]}</a>`);
-
-        //make it so the latest added city has the active styling
+        //build new button to add to left pane
         newButton = $(`<button class="list-group-item city-button list-group-item-action">${citiesArray[i]}</button>`);
 
+        //assign active class to the first item in the list (most recently searched city)
+        if (i === citiesArray.length - 1) {
+          newButton.addClass("active");
+        }
         //optional: to add an x button.
         //   newButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
-        savedCitiesEl.append(newButton);
+        //append the button the list
+        savedCitiesEl.prepend(newButton);
       }
     }
   }
