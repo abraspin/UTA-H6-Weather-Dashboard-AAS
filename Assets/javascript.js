@@ -22,7 +22,16 @@ $(document).ready(function () {
   //Fill the list right away with any previously saved cities
   preFillCities();
 
-  //
+  //prefill forecast data with most recently searched city, if there was one
+  if (localStoredCitiesArray.length > 0) {
+    var latestSearchedCity = localStoredCitiesArray[0];
+    callAPIAndRender(
+      `https://api.openweathermap.org/data/2.5/weather?q=${latestSearchedCity}&APPID=${apiKey}`,
+      latestSearchedCity
+    );
+    renderFiveDayForecast(latestSearchedCity);
+    console.log(`https://api.openweathermap.org/data/2.5/weather?q=${latestSearchedCity}&APPID=${apiKey}`);
+  }
   //
   //
   //TODO: set the selected city with the "active" class in the UL
@@ -82,7 +91,13 @@ $(document).ready(function () {
   $("aside").on("click", "li", function (event) {
     //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
 
-    //   First we clear out any old weather info that might be in the right side
+    //First remove the active class from all the "buttons" in this element
+    $("li").removeClass("active");
+
+    // then assign active class to clicked button
+    $(this).addClass("active");
+
+    //    clear out any old weather info that might be in the right side
     $("#weather-data").empty();
     $("#forecast-data").empty();
 
@@ -96,12 +111,12 @@ $(document).ready(function () {
     var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
 
     // // Performing our AJAX GET request
-    callAPIAndRender(queryURL);
+    callAPIAndRender(queryURL, searchTerm);
     // render the 5 day forecast
     renderFiveDayForecast(searchTerm);
   });
   //////////////////////FUNCTIONS///////////////////////////////////
-  function callAPIAndRender(queryURL) {
+  function callAPIAndRender(queryURL, searchTerm) {
     //
     // // Performing our AJAX GET request
     $.ajax({
@@ -199,7 +214,7 @@ $(document).ready(function () {
         // counter used to render next 5 calendar dates
         var dayCounter = 0;
 
-        // we just want one data point per day
+        // We want to skip ahead 8 elements at a time, this gives us 00:00:00 on each day for 5 days.
         var responseArrayEl = response.list[i];
 
         //build the card body
@@ -210,7 +225,7 @@ $(document).ready(function () {
         forecastCard.append($(`<h5 'class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
 
         //increment counter used to render next 5 calendar dates
-        dayCounter += 1;
+        dayCounter++;
         console.log(dayCounter);
 
         //grab our nice weather icon
