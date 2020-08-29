@@ -59,9 +59,13 @@ $(document).ready(function () {
 
   /////////////////////////////EVENT LISTENER FOR CLEAR ALL CITIES BUTTON/////////////////////////
   $("#clear-cities-btn").on("click", function (event) {
-    event.preventDefault;
+    // event.preventDefault;
     $("#saved-cities").empty();
     localStorage.setItem("localStoredCitiesArray", "[]");
+
+    //refresh the page to reset render functions - otherwise it will not render newly submitted cities
+    location.reload();
+    return false;
   });
 
   ///////////////////////////EVENT LISTENER FOR CLICKING ON A CITY BUTTON////////////////////////////////
