@@ -26,7 +26,7 @@ $(document).ready(function () {
     console.log(`https://api.openweathermap.org/data/2.5/weather?q=${latestSearchedCity}&APPID=${apiKey}`);
 
     //set the first city on the list to .active styling
-    $("li:first").addClass("active");
+    $("a:first").addClass("active");
   }
 
   ///////////////////////////// EVENT LISTENER FOR ADDING NEW CITIES/////////////////////////////
@@ -52,7 +52,8 @@ $(document).ready(function () {
       localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
 
       //"build" the buttons
-      var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
+      // var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
+      newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${searchedCity}</a>`);
 
       // OPTIONAL: add x out icon
       //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
@@ -77,11 +78,11 @@ $(document).ready(function () {
   });
 
   ///////////////////////////EVENT LISTENER FOR CLICKING ON A CITY BUTTON////////////////////////////////
-  $("aside").on("click", "li", function (event) {
-    //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
+  $("aside").on("click", "a", function (event) {
+    //This is listening for a click on any element of type "a" as long as it's WITHIN THE ASIDE ELEMENT
 
     //First remove the active class from all the "buttons" in this element
-    $("li").removeClass("active");
+    $("a").removeClass("active");
 
     // then assign active class to clicked button
     $(this).addClass("active");
@@ -247,8 +248,8 @@ $(document).ready(function () {
       var citiesArray = JSON.parse(citiesArray) || [];
 
       for (var i = 0; i < citiesArray.length; i++) {
-        newButton = $(`<li class="list-group-item city-button ">${citiesArray[i]}</li>`);
-
+        // newButton = $(`<li class="list-group-item city-button ">${citiesArray[i]}</li>`);
+        newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${citiesArray[i]}</a>`);
         //optional: to add an x button.
         //   newButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
