@@ -35,32 +35,35 @@ $(document).ready(function () {
 
     //TODO: need error checking to make sure the api gets the right format search term?
     //TODO: add error checking for the user entering a city they already added
-    //TODO: reach goal: return an error message on API 404 return?
+    //TODO: return an error message on API 404 return?
     //TODO: what does it mean when my url has a "?" at the end of it? It...breaks some stuff, with the search?
 
     //set searched city to the form value
     var searchedCity = $(`#city-search-form`).val();
-    if (searchedCity) {
-      // if (!localStoredCitiesArray) {
-      //   localStoredCitiesArray = [];
-      // }
+    // // Constructing a URL to search openWeatherAPI for the city entered by the user
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + searchedCity + "&APPID=" + apiKey;
 
-      // add the new city to the local "list of cities" variable
-      localStoredCitiesArray.push(searchedCity);
+    callAPIAndRender(queryURL, searchedCity);
+    renderFiveDayForecast(searchedCity);
 
-      //push the new array with new city on top to local storage
-      localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
+    //TODO: this is taken care of by prefill function?
+    //     if (searchedCity) {
+    //       // if (!localStoredCitiesArray) {
+    //       //   localStoredCitiesArray = [];
+    //       // }
+    // //TODO:
+    //       //"build" the buttons
+    //       // var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
+    //       // newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${searchedCity}</a>`);
+    //       newButton = $(`<button class="list-group-item city-button list-group-item-action">${searchedCity}</button>`);
 
-      //"build" the buttons
-      // var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
-      newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${searchedCity}</a>`);
+    //       // OPTIONAL: add x out icon
+    //       //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
-      // OPTIONAL: add x out icon
-      //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
-
-      // generate each user inputted city as a "button" line item
-      savedCitiesEl.append(newCityButton);
-    }
+    //       // generate each user inputted city as a "button" line item
+    //       savedCitiesEl.append(newButton);
+    //     }
+    ///////////////////////////////////
 
     //reset search field to blank after submitting a city
     $(`#city-search-form`).val("");
@@ -78,11 +81,11 @@ $(document).ready(function () {
   });
 
   ///////////////////////////EVENT LISTENER FOR CLICKING ON A CITY BUTTON////////////////////////////////
-  $("aside").on("click", "a", function (event) {
+  $("aside").on("click", "button", function (event) {
     //This is listening for a click on any element of type "a" as long as it's WITHIN THE ASIDE ELEMENT
 
     //First remove the active class from all the "buttons" in this element
-    $("a").removeClass("active");
+    $("button").removeClass("active");
 
     // then assign active class to clicked button
     $(this).addClass("active");
@@ -105,7 +108,7 @@ $(document).ready(function () {
     // render the 5 day forecast
     renderFiveDayForecast(searchTerm);
   });
-
+  //TODO: maybe dont need queiryu uirl arg,. jkust make it inside functiuon
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL, searchTerm) {
     //
@@ -134,8 +137,18 @@ $(document).ready(function () {
         var currentLat = response.coord.lat;
         var currentLon = response.coord.lon;
         var currentClouds = response.clouds.all;
-
+        //TODO: add the city to local array variable HERE instead of at click event for submit button, so it only saves
         //Now we do the ajax call to get UV information for this location
+
+        // add the new city to the local "list of cities" variable
+        if (localStoredCitiesArray.indexOf(searchTerm) === -1) {
+          localStoredCitiesArray.push(searchTerm);
+          console.log(localStoredCitiesArray);
+
+          //push the new array with new city on top to local storage
+          localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
+          preFillCities();
+        }
         var UVQueryURL = `https://api.openweathermap.org/data/2.5/uvi?appid=${apiKey}&lat=${currentLat}&lon=${currentLon}`;
 
         var currentDate = moment().format("l");
@@ -199,12 +212,12 @@ $(document).ready(function () {
       //first show the header element, we hid it prior to rendering this info
       $("#forecast-header").show();
 
+      // counter used to render next 5 calendar dates
+      var dayCounter = 0;
+
       // then render each of the 5 day forecast cards
       // add 8 each time so we get the same time each day, each subsequent array el is 3 hours later
       for (var i = 0; i < response.list.length; i += 8) {
-        // counter used to render next 5 calendar dates
-        var dayCounter = 0;
-
         // We want to skip ahead 8 elements at a time, this gives us 00:00:00 on each day for 5 days.
         var responseArrayEl = response.list[i];
 
@@ -213,9 +226,9 @@ $(document).ready(function () {
           `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  m-2'></div>;`
         );
         //FIXME: these card respond positionally, but they are taking up the whole element when they go to the next row.
+        //TODO: Try media queries to set a fixed width at small screen size
         forecastCard.append($(`<h5 'class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
 
-        //FIXME:FIXME:FIXME:FIXME:FIXME: THE DATES ARE INCORRECT ON THE TOP OF THE FORECAST CARDS. WHY WON'T THIS INCREMENT?
         //increment counter used to render next 5 calendar dates
         dayCounter++;
         console.log(dayCounter);
@@ -247,9 +260,14 @@ $(document).ready(function () {
     if (citiesArray.length > 0) {
       var citiesArray = JSON.parse(citiesArray) || [];
 
+      savedCitiesEl.empty();
       for (var i = 0; i < citiesArray.length; i++) {
         // newButton = $(`<li class="list-group-item city-button ">${citiesArray[i]}</li>`);
-        newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${citiesArray[i]}</a>`);
+        // newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${citiesArray[i]}</a>`);
+
+        //make it so the latest added city has the active styling
+        newButton = $(`<button class="list-group-item city-button list-group-item-action">${citiesArray[i]}</button>`);
+
         //optional: to add an x button.
         //   newButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
