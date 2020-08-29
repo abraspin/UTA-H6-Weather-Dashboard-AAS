@@ -7,14 +7,6 @@ var forecastEl = $("#forecast-data");
 var localStoredCitiesArray = JSON.parse(localStorage.getItem("localStoredCitiesArray")) || [];
 console.log("localStoredCitiesArray", localStoredCitiesArray);
 
-//this is so weird...
-// if (!localStorage.getItem("localStoredCitiesArray")) {
-//   //this is actually necessary
-//   console.log("I think local storage is null");
-//   localStorage.setItem("localStoredCitiesArray", "");
-//   //   localStoredCitiesArray = JSON.stringify("");
-// }
-
 // Main executing script
 $(document).ready(function () {
   //
@@ -22,7 +14,8 @@ $(document).ready(function () {
   //Fill the list right away with any previously saved cities
   preFillCities();
 
-  //prefill forecast data with most recently searched city, if there was one
+  //TODO: put this inside of the prefillcities function?
+  //Prefill forecast data with most recently searched city, if there was one
   if (localStoredCitiesArray.length > 0) {
     var latestSearchedCity = localStoredCitiesArray[0];
     callAPIAndRender(
@@ -31,26 +24,22 @@ $(document).ready(function () {
     );
     renderFiveDayForecast(latestSearchedCity);
     console.log(`https://api.openweathermap.org/data/2.5/weather?q=${latestSearchedCity}&APPID=${apiKey}`);
-  }
-  //
-  //
-  //TODO: set the selected city with the "active" class in the UL
-  ///////////////////////////// Event listener for adding new cities/////////////////////////////
 
+    //set the first city on the list to .active styling
+    $("li:first").addClass("active");
+  }
+
+  ///////////////////////////// EVENT LISTENER FOR ADDING NEW CITIES/////////////////////////////
   $(".form-inline").on("submit", function (event) {
     event.preventDefault();
 
-    //TODO: need error checking to make sure the api gets the right format search term
+    //TODO: need error checking to make sure the api gets the right format search term?
     //TODO: add error checking for the user entering a city they already added
-    //TODO: reach goal: return an error message on API 404 return
+    //TODO: reach goal: return an error message on API 404 return?
     //TODO: what does it mean when my url has a "?" at the end of it? It...breaks some stuff, with the search?
-    //check for empty string
 
     //set searched city to the form value
     var searchedCity = $(`#city-search-form`).val();
-    ///////////////dummy value//////////////////////
-    //   searchedCity = "Austin";
-    ///////////////dummy value//////////////////////
     if (searchedCity) {
       // if (!localStoredCitiesArray) {
       //   localStoredCitiesArray = [];
@@ -63,9 +52,9 @@ $(document).ready(function () {
       localStorage.setItem("localStoredCitiesArray", JSON.stringify(localStoredCitiesArray));
 
       //"build" the buttons
-      var newCityButton = $(`<li class="list-group-item city-button my-1">${searchedCity}</li>`);
+      var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
 
-      //TODO: optional: add x out icon
+      // OPTIONAL: add x out icon
       //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
       // generate each user inputted city as a "button" line item
@@ -75,19 +64,19 @@ $(document).ready(function () {
     //reset search field to blank after submitting a city
     $(`#city-search-form`).val("");
   });
-  //FIXME: OPTIONAL  ////////////////////event listener for "exing out" of an existing city LI////////////////////////
+
+  //OPTIONAL  ///////////event listener for "exing out" of an existing city LI//////
   //   $(".close-btn").on("click", function (event) {
   //     console.log(event.currentTarget);
   //   });
 
-  //////////event LISTENER FOR CLEAR ALL CITIES BUTTON/////////////////////////
+  /////////////////////////////EVENT LISTENER FOR CLEAR ALL CITIES BUTTON/////////////////////////
   $("#clear-cities-btn").on("click", function (event) {
     $("#saved-cities").empty();
     localStorage.setItem("localStoredCitiesArray", "[]");
   });
 
-  ///////////////////////////event listener for clicking on a city button////////////////////////////////
-
+  ///////////////////////////EVENT LISTENER FOR CLICKING ON A CITY BUTTON////////////////////////////////
   $("aside").on("click", "li", function (event) {
     //This is listening for a click on any element of type "li" as long as it's WITHIN THE ASIDE ELEMENT
 
@@ -115,6 +104,7 @@ $(document).ready(function () {
     // render the 5 day forecast
     renderFiveDayForecast(searchTerm);
   });
+
   //////////////////////FUNCTIONS///////////////////////////////////
   function callAPIAndRender(queryURL, searchTerm) {
     //
@@ -129,7 +119,6 @@ $(document).ready(function () {
         $("#weather-data").empty();
 
         // Storing searched city's weather and temperature objects
-        var weatherResults = response.weather;
         var tempResults = response.main;
         var windResults = response.wind;
 
@@ -157,7 +146,8 @@ $(document).ready(function () {
         //append the current weather card header
         weatherDataEl.append($(`<h2 style='font-weight: bold'>${searchTerm} (${currentDate}) </h2>`));
 
-        //FIXME: I can't get the dang weather icon to go inline!
+        //FIXME: WHY DO MY ICONS LOOK SO CRUMMY COMPARED TO THE EXAMPLE
+        //append the fancy icon
         weatherDataEl.append(weatherIconEl);
 
         //render the rest of the current weather card
@@ -221,9 +211,10 @@ $(document).ready(function () {
         var forecastCard = $(
           `<div style = 'width: auto' class='day${i} container col bg-primary rounded text-white font-weight-bold  m-2'></div>;`
         );
-        //TODO: these card respond positionally, but they are taking up the whole element when they go to the next row.
+        //FIXME: these card respond positionally, but they are taking up the whole element when they go to the next row.
         forecastCard.append($(`<h5 'class='font-weight-bold'>${moment().add(dayCounter, "days").format("l")}</h5>`));
 
+        //FIXME:FIXME:FIXME:FIXME:FIXME: THE DATES ARE INCORRECT ON THE TOP OF THE FORECAST CARDS. WHY WON'T THIS INCREMENT?
         //increment counter used to render next 5 calendar dates
         dayCounter++;
         console.log(dayCounter);
@@ -250,20 +241,19 @@ $(document).ready(function () {
 
   ////////////////FUNCTION TO PREFILL THE SAVED CITIES UL///////////////////
   function preFillCities() {
-    //FIXME: THIS CRASHES WHEN LOCAL STORAGE IS EMPTY.
     var citiesArray = localStorage.getItem("localStoredCitiesArray") || [];
     console.log("preFillCities -> citiesArray", citiesArray);
     if (citiesArray.length > 0) {
       var citiesArray = JSON.parse(citiesArray) || [];
 
       for (var i = 0; i < citiesArray.length; i++) {
-        newButton = $(`<li class="list-group-item city-button my-1">${citiesArray[i]}</li>`);
-        //optional TODO: to add an x button.
+        newButton = $(`<li class="list-group-item city-button ">${citiesArray[i]}</li>`);
+
+        //optional: to add an x button.
         //   newButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
 
         savedCitiesEl.append(newButton);
       }
     }
   }
-  //TODO: https://getbootstrap.com/docs/4.1/components/list-group/ FOR ACTIVE SELECTION STYLING
 });
