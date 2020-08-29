@@ -93,7 +93,7 @@ $(document).ready(function () {
     searchTerm = event.currentTarget.innerHTML;
 
     // // Constructing a URL to search openWeatherAPI for the city entered by the user
-    var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
+    var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" + searchTerm + "&APPID=" + apiKey;
 
     // // Performing our AJAX GET request
     callAPIAndRender(queryURL);
@@ -136,7 +136,7 @@ $(document).ready(function () {
         var currentDate = moment().format("l");
 
         //grab the icon link for weather visualization
-        var currentWeatherIconLink = `http://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
+        var currentWeatherIconLink = `https://openweathermap.org/img/wn/${response.weather[0].icon}@2x.png`;
         var weatherIconEl = $(`<img src='${currentWeatherIconLink}'></img>`);
 
         //append the current weather card header
@@ -214,7 +214,7 @@ $(document).ready(function () {
         console.log(dayCounter);
 
         //grab our nice weather icon
-        forecastCard.append($(`<img src="http://openweathermap.org/img/wn/${responseArrayEl.weather[0].icon}@2x.png">;`));
+        forecastCard.append($(`<img src="https://openweathermap.org/img/wn/${responseArrayEl.weather[0].icon}@2x.png">;`));
 
         //put the temp and humidity on
         var temp = (((responseArrayEl.main.temp - 273.15) * 9) / 5 + 32).toFixed(2);
