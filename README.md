@@ -29,7 +29,7 @@ https://abraspin.github.io/UTA-H6-Weather-Dashboard-AAS/
 ## Example
 
 
-![Screenshot of deployed app](https://github.com/abraspin/UTA-H6-Weather-Dashboard-AAS/blob/master/Assets/app-screenshot.png)
+![Screenshot of deployed app](./Assets/app-screenshot.png)
 
 
 ---
