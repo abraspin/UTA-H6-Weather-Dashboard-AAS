@@ -47,25 +47,6 @@ $(document).ready(function () {
     callAPIAndRender(queryURL, searchedCity);
     renderFiveDayForecast(searchedCity);
 
-    //TODO: this is taken care of by prefill function?
-    //     if (searchedCity) {
-    //       // if (!localStoredCitiesArray) {
-    //       //   localStoredCitiesArray = [];
-    //       // }
-    // //TODO:
-    //       //"build" the buttons
-    //       // var newCityButton = $(`<li class="list-group-item city-button ">${searchedCity}</li>`);
-    //       // newButton = $(`<a href="#" class="list-group-item city-button list-group-item-action">${searchedCity}</a>`);
-    //       newButton = $(`<button class="list-group-item city-button list-group-item-action">${searchedCity}</button>`);
-
-    //       // OPTIONAL: add x out icon
-    //       //   newCityButton.append($(`<i class='close-btn border p-1 fa fa-times fa-2x my-auto float-right'></i>`));
-
-    //       // generate each user inputted city as a "button" line item
-    //       savedCitiesEl.append(newButton);
-    //     }
-    ///////////////////////////////////
-
     //reset search field to blank after submitting a city
     $(`#city-search-form`).val("");
   });
