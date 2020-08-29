@@ -17,7 +17,8 @@ $(document).ready(function () {
   //TODO: put this inside of the prefill cities function?
   //Prefill forecast data with most recently searched city, if there was one
   if (localStoredCitiesArray.length > 0) {
-    var latestSearchedCity = localStoredCitiesArray[0];
+    var latestSearchedCity = localStoredCitiesArray[localStoredCitiesArray.length - 1];
+
     callAPIAndRender(
       `https://api.openweathermap.org/data/2.5/weather?q=${latestSearchedCity}&APPID=${apiKey}`,
       latestSearchedCity
