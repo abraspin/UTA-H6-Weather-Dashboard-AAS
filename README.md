@@ -22,7 +22,7 @@ The assignment was to build a weather dashboard that displays the current weathe
 
 ## Link to Deployed Application
 
-https://abraspin.github.io/UTA-H6-Weather-Dashboard-AAS/
+https://abraspin.github.io/Weather-Dashboard/
 
 ---
 
