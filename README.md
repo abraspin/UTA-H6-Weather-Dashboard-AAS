@@ -50,7 +50,7 @@ Author: Abraham Spindel
 ---
 
 ## Credits
-* JQuery Library
+* JQuery Library  
 * Bootstrap Framework
 * Font Awesome by Dave Gandy - http://fontawesome.io
 * Open Weather - https://openweathermap.org
@@ -61,5 +61,5 @@ Author: Abraham Spindel
 ---
 
 ## License
-Openweather.org: Creative Commons Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0)
+Openweather.org: Creative Commons Attribution-ShareAlike 4.0 International licence (CC BY-SA 4.0)  
 JQuery, Bootstrap: MIT License
